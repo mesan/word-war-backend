@@ -1,0 +1,19 @@
+{
+  "name": "third-word-war",
+  "version": "0.0.1",
+  "description": "Third Word War - word game for Mesan AS",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://mikkelsteine@bitbucket.org/mikkelsteine/third-word-war.git"
+  },
+  "author": "Mikkel Steine, Arild Tvergrov",
+  "license": "ISC",
+  "private": true,
+  "dependencies": {
+    "express": "^4.9.4"
+  }
+}
