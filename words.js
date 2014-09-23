@@ -1,6 +1,5 @@
-var Words = (function() {
-  var letterCount = 20,
-      timeoutSeconds = 300,
+(function() {
+  var timeoutSeconds = 300,
       letterPool = 'aaaaabbcdddeeeeeeeeeeeeffggghiiiiijkkklllllmmmnnnnnnnooooppqrrrrrrrsssssstttttttuuvvwxyzæøåå',
       letters = { // letters and their fequency in the Norwegian language
         a: 4.9,
@@ -34,17 +33,14 @@ var Words = (function() {
         'å': 2.0
       };
   
-  function getRandomLetters() {
-    var lc = letterCount;
+  function getRandomLetters(letterCount) {
     var randomLetters = [];
-    var letterPoolLength = letterPool.size();
-    for (;lc--;) {
-      randomLetters.push( letterPool[letterPoolLength * Math.random()] );
+    var letterPoolLength = letterPool.length;
+    for (;letterCount--;) {
+      randomLetters.push( letterPool.substr(letterPoolLength * Math.random(),1) );
     }
     return randomLetters;
   }
 
-  return {
-    getRandomLetters: getRandomLetters
-  };
+  module.exports.randomLetters = getRandomLetters;
 })();
