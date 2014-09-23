@@ -1,5 +1,4 @@
 var express = require('express')
-var bodyParser = require('body-parser');
 var connect = require('connect');
 var serveStatic = require('serve-static');
 var lineReader = require('line-reader');
@@ -18,11 +17,6 @@ function initWebServer(port) {
 function initRESTService(port) {
   var app = express();
 
-  // configure app to use bodyParser()
-  // this will let us get the data from a POST
-  app.use(bodyParser.urlencoded({ extended: true }));
-  app.use(bodyParser.json());
-
   var router = express.Router();
   router.get('/', function(req, res) {
     res.json({ message: 'Funker!' }); 
@@ -33,8 +27,11 @@ function initRESTService(port) {
     var type = words[tocheck];
     if (type) {
       word = tocheck;
+      res.json({ exists: word, checked:tocheck, type: type });
+    } else {
+      console.log( "Word "+tocheck+" not found in dictionary." );
+      return res.status(404).send("Word "+tocheck+" not found in dictionary.");
     }
-    res.json({ exists: word, checked:tocheck, type: type });
   });
 
   app.use('/api', router);
