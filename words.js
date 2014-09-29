@@ -1,4 +1,6 @@
 (function() {
+  "use strict";
+  
   var timeoutSeconds = 300,
       letterPool = 'aaaaabbcdddeeeeeeeeeeeeffggghiiiiijkkklllllmmmnnnnnnnooooppqrrrrrrrsssssstttttttuuvvwxyzæøåå',
       letters = { // letters and their fequency in the Norwegian language

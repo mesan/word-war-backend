@@ -3,20 +3,23 @@ var connect = require('connect');
 var serveStatic = require('serve-static');
 var lineReader = require('line-reader');
 var words = require('./words');
+var io = require('socket.io')(socket_port);
 
 var dictionary = {};
 
 var wordFile = "NSF-ordlisten.txt";
 var web_port = 8080;
 var rest_port = 8081;
+var http;
 
 function initWebServer(port) {
-  connect().use(serveStatic(__dirname)).listen(port);
+  connect().use(serveStatic(__dirname + '/public')).listen(port);
   console.log("Web server on port " + web_port);
 }
 
 function initRESTService(port) {
   var app = express();
+  http = require('http').Server(app);
 
   var router = express.Router();
   router.get('/', function(req, res) {
@@ -35,8 +38,7 @@ function initRESTService(port) {
   });
 
   router.get('/letters', function(req, res) {
-    var letters = words.randomLetters(20);
-    res.json({ letters: letters });
+    res.json({ letters: words.randomLetters(20) });
   });
 
   app.use('/api', router);
