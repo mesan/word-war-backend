@@ -4,5 +4,27 @@
 </head>
 <body>
   <h1>Third Word War</h1>
+
+<script type="text/javascript" src="vendor/socket.io-client/socket.io.js"></script>
+<script type="text/javascript">
+  var url = 'http://localhost:3000';
+
+  var socket = io(url, {
+    transports: ['websocket']
+  });
+
+  socket.on('connected', function (data) {
+    console.log(data);
+  });
+
+  socket.on('words', function (words) {
+    console.log(words);
+  });
+
+  socket.on('feil', function(melding) {
+    console.log("FEIL: "+melding);
+  });
+
+</script>
 </body>
 </html>

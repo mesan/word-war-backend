@@ -1,68 +1,80 @@
-var express = require('express')
-var connect = require('connect');
-var serveStatic = require('serve-static');
 var lineReader = require('line-reader');
 var words = require('./words');
-var io = require('socket.io')(socket_port);
+var express = require("express");
+var app = express();
+var http = require("http").Server(app);
+var io = require("socket.io")(http);
 
-var dictionary = {};
-
+var ordbok = {};
 var wordFile = "NSF-ordlisten.txt";
-var web_port = 8080;
-var rest_port = 8081;
-var http;
+var wordsRead = false;
 
-function initWebServer(port) {
-  connect().use(serveStatic(__dirname + '/public')).listen(port);
-  console.log("Web server on port " + web_port);
-}
+var sockets = [];
 
-function initRESTService(port) {
-  var app = express();
-  http = require('http').Server(app);
+app.use(express.static('./public'));
 
-  var router = express.Router();
-  router.get('/', function(req, res) {
-    res.json({ message: 'Funker!' }); 
+http.listen(3000, function() {
+  console.log("Lytter til port 3000.");
+});
+
+io.on('connection', function(socket) {
+  var jeger;
+
+  sockets.push(socket);
+  console.log('En bruker er med oss.');
+  socket.emit('connected', "Velkommen til Word War!");
+
+  socket.on('jeg er', function(melding) {
+    jeger = melding;
+    console.log(jeger + " er med oss.");
   });
-  router.get('/word/:word', function(req, res) {
-    var tocheck = req.params.word.toUpperCase();
-    var type = dictionary[tocheck];
+
+  socket.on('ord', function(ord) {
+    if (!jeger) {
+      socket.emit("feil", "Jeg vet ikke hvem du er.");
+      return false;
+    }
+    var sjekkOrd = ord.toUpperCase();
+    var type = ordbok[sjekkOrd];
     if (type) {
-      res.json({ exists: tocheck, type: type });
+      socket.emit('ord', JSON.stringify({ finnes: sjekkOrd, type: type }));
     } else {
-      var err = "Word " + tocheck + " not found in dictionary.";
-      console.log( err );
-      return res.status(404).send( err );
+      socket.emit('ord', JSON.stringify({ finnes: null }));
     }
   });
-
+/*
   router.get('/letters', function(req, res) {
     res.json({ letters: words.randomLetters(20) });
   });
+*/
 
-  app.use('/api', router);
-  app.listen(port);
-  console.log("REST API on port "+rest_port);
-}
+  socket.on('disconnect', function() {
+    if (jeger) {
+      console.log(jeger + " har forlatt oss.");
+    } else {
+      console.log('En bruker har forlatt oss.');
+    }
+  });
+});
+
 
 function readWordFile(fileName) {
   var wordCount = 0;
   lineReader.eachLine(fileName, function(line, last) {
 //    console.log(line);
     var larr = line.split(' ');
-    if (dictionary[larr[0]]) {
-      dictionary[larr[0]] += '/'+larr[1];
+    if (ordbok[larr[0]]) {
+      ordbok[larr[0]] += '/'+larr[1];
     } else {
-      dictionary[larr[0]] = larr[1];
+      ordbok[larr[0]] = larr[1];
       wordCount++;
     }
     if (last) {
+      wordsRead = true;
       console.log("Added " + wordCount + " words to dictionary.");
     }
   });
 }
 
 readWordFile(wordFile);
-initWebServer(web_port);
-initRESTService(rest_port);
+
