@@ -10,6 +10,10 @@ var wordFile = "NSF-ordlisten.txt";
 var wordsRead = false;
 var rundetid = 30000;
 var sockets = [];
+var brukerteller = 0;
+var brukere = {};
+var gjeldendeBokstaver = [];
+var funnedeOrd = {};
 
 app.use(express.static('./public'));
 
@@ -24,9 +28,18 @@ io.on('connection', function(socket) {
   console.log('En bruker er med oss.');
   socket.emit('connected', "Velkommen til Word War!");
 
-  socket.on('jeg er', function(melding) {
-    jeger = melding;
+  // Logg inn med "jeg er"
+  socket.on('jeg er', function(navn) {
+    jeger = navn;
     console.log(jeger + " er med oss.");
+
+    if (!brukere[jeger]) {
+      brukerteller++;
+      brukere[jeger] = { navn: jeger, poeng: 0, erMed: true, id: brukerteller }
+    } else {
+      brukere[jeger][erMed] = true;
+    }
+    io.emit("velkommen", JSON.stringify(brukere[jeger]));
   });
 
   socket.on('ord', function(ord) {
@@ -34,17 +47,16 @@ io.on('connection', function(socket) {
       socket.emit("feil", "Jeg vet ikke hvem du er.");
       return false;
     }
-    var sjekkOrd = ord.toUpperCase();
-    var type = ordbok[sjekkOrd];
-    if (type) {
-      socket.emit('ord', type );
-    } else {
-      socket.emit('ord', "" );
-    }
+
+    sjekkOmOrdErMulig();
   });
 
   socket.on('disconnect', function() {
     if (jeger) {
+      if (brukere[jeger]) {
+        brukere[jeger][erMed] = false;
+        io.emit("farvel", JSON.stringify(brukere[jeger]));
+      }
       console.log(jeger + " har forlatt oss.");
     } else {
       console.log('En bruker har forlatt oss.');
@@ -52,14 +64,27 @@ io.on('connection', function(socket) {
   });
 });
 
+function sjekkOmOrdErMulig() {
+//  if ()
+  var sjekkOrd = ord.toUpperCase();
+  var type = ordbok[sjekkOrd];
+  if (type) {
+    io.emit('ordfunnet', type );
+  }
+}
+
 function sendBokstaver() {
-  var bokstaver = JSON.stringify({ bokstaver: words.randomLetters(30) });
+  gjeldendeBokstaver = words.randomLetters(30);
+  var bokstaver = JSON.stringify({ bokstaver: gjeldendeBokstaver });
   console.log(bokstaver);
   io.emit("bokstaver", bokstaver);
   setTimeout(sendBokstaver, rundetid);
 }
-setTimeout(sendBokstaver, rundetid);
 
+function klartTilSending() {
+  wordsRead = true;
+  sendBokstaver();
+}
 
 function readWordFile(fileName) {
   var wordCount = 0;
@@ -73,8 +98,8 @@ function readWordFile(fileName) {
       wordCount++;
     }
     if (last) {
-      wordsRead = true;
       console.log("Added " + wordCount + " words to dictionary.");
+      klartTilSending();
     }
   });
 }
