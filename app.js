@@ -8,7 +8,7 @@ var io = require("socket.io")(http);
 var ordbok = {};
 var wordFile = "NSF-ordlisten.txt";
 var wordsRead = false;
-
+var rundetid = 30000;
 var sockets = [];
 
 app.use(express.static('./public'));
@@ -37,16 +37,11 @@ io.on('connection', function(socket) {
     var sjekkOrd = ord.toUpperCase();
     var type = ordbok[sjekkOrd];
     if (type) {
-      socket.emit('ord', JSON.stringify({ finnes: sjekkOrd, type: type }));
+      socket.emit('ord', type );
     } else {
-      socket.emit('ord', JSON.stringify({ finnes: null }));
+      socket.emit('ord', "" );
     }
   });
-/*
-  router.get('/letters', function(req, res) {
-    res.json({ letters: words.randomLetters(20) });
-  });
-*/
 
   socket.on('disconnect', function() {
     if (jeger) {
@@ -56,6 +51,14 @@ io.on('connection', function(socket) {
     }
   });
 });
+
+function sendBokstaver() {
+  var bokstaver = JSON.stringify({ bokstaver: words.randomLetters(30) });
+  console.log(bokstaver);
+  io.emit("bokstaver", bokstaver);
+  setTimeout(sendBokstaver, rundetid);
+}
+setTimeout(sendBokstaver, rundetid);
 
 
 function readWordFile(fileName) {

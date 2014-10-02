@@ -17,12 +17,20 @@
     console.log(data);
   });
 
-  socket.on('words', function (words) {
-    console.log(words);
+  socket.on('ord', function (ord) {
+    if (ord && ord.length > 0) {
+      console.log(ord);
+    } else {
+      console.log("IKKE FUNNET");
+    }
   });
 
   socket.on('feil', function(melding) {
     console.log("FEIL: "+melding);
+  });
+
+  socket.on('bokstaver', function(melding) {
+    console.log(melding);
   });
 
 </script>
