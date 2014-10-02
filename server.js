@@ -37,7 +37,7 @@ io.on('connection', function(socket) {
       brukerteller++;
       brukere[jeger] = { navn: jeger, poeng: 0, erMed: true, id: brukerteller }
     } else {
-      brukere[jeger][erMed] = true;
+      brukere[jeger].erMed = true;
     }
     io.emit("velkommen", JSON.stringify(brukere[jeger]));
   });
@@ -48,13 +48,18 @@ io.on('connection', function(socket) {
       return false;
     }
 
-    sjekkOmOrdErMulig();
+    var poeng = kalkulerPoengFraOrd(ord);
+    brukere[jeger].poeng += poeng;
+
+    if (poeng > 0) {
+      io.emit("poeng", JSON.stringify(brukere[jeger]));
+    }
   });
 
   socket.on('disconnect', function() {
     if (jeger) {
       if (brukere[jeger]) {
-        brukere[jeger][erMed] = false;
+        brukere[jeger].erMed = false;
         io.emit("farvel", JSON.stringify(brukere[jeger]));
       }
       console.log(jeger + " har forlatt oss.");
@@ -64,18 +69,46 @@ io.on('connection', function(socket) {
   });
 });
 
-function sjekkOmOrdErMulig() {
-//  if ()
+function sjekkOmOrdetPasserBokstavene(ord) {
+  var bokstaver = ord.toLowerCase().split('').sort();
+
+  var score = 0;
+  var b = 0;
+  var gb = 0;
+  var bl = bokstaver.length;
+  var gbl = gjeldendeBokstaver.length;
+  while (b<bl && gb<gbl) {
+    // console.log("lik? " + bokstaver[b] + ' ' + gjeldendeBokstaver[gb]);
+    if (bokstaver[b] === gjeldendeBokstaver[gb]) {
+      score += words.letterScore(bokstaver[b]);
+      b++;
+    }
+    gb++;
+  }
+  //console.log(b);
+  if (b === bl) {
+    return score;
+  }
+  return 0;
+}
+
+function kalkulerPoengFraOrd(ord) {
+  console.log("Sjekk "+ord);
+  var poeng = sjekkOmOrdetPasserBokstavene(ord);
+  
   var sjekkOrd = ord.toUpperCase();
   var type = ordbok[sjekkOrd];
   if (type) {
     io.emit('ordfunnet', type );
+    return poeng;
   }
+  return 0;
 }
 
 function sendBokstaver() {
   gjeldendeBokstaver = words.randomLetters(30);
   var bokstaver = JSON.stringify({ bokstaver: gjeldendeBokstaver });
+  gjeldendeBokstaver.sort();
   console.log(bokstaver);
   io.emit("bokstaver", bokstaver);
   setTimeout(sendBokstaver, rundetid);
