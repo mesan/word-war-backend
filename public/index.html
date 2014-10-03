@@ -15,6 +15,9 @@
 
   socket.on('connected', function (data) {
     console.log(data);
+
+    socket.emit('i am', 'arild');
+    socket.emit('word', 'kirke');
   });
 
   socket.on('word taken', function (melding) {
