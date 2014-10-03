@@ -1,141 +1,82 @@
-var lineReader = require('line-reader');
 var words = require('./words');
 var express = require("express");
 var app = express();
 var http = require("http").Server(app);
 var io = require("socket.io")(http);
 
-var ordbok = {};
+var round = 30000; // ms
+var userCount = 0;
+var users = {};
 var wordFile = "NSF-ordlisten.txt";
-var wordsRead = false;
-var rundetid = 30000;
-var sockets = [];
-var brukerteller = 0;
-var brukere = {};
-var gjeldendeBokstaver = [];
-var funnedeOrd = {};
 
 app.use(express.static('./public'));
 
 http.listen(3000, function() {
-  console.log("Lytter til port 3000.");
+  console.log("Listening to port 3000.");
 });
 
 io.on('connection', function(socket) {
-  var jeger;
+  var myname;
 
-  sockets.push(socket);
-  console.log('En bruker er med oss.');
-  socket.emit('connected', "Velkommen til Word War!");
+  console.log('A user has joined us.');
+  socket.emit('connected', "Welcome Word War!");
 
   // Logg inn med "jeg er"
-  socket.on('jeg er', function(navn) {
-    jeger = navn;
-    console.log(jeger + " er med oss.");
+  socket.on('i am', function(name) {
+    myname = name;
+    console.log(myname + " is with us.");
 
-    if (!brukere[jeger]) {
-      brukerteller++;
-      brukere[jeger] = { navn: jeger, poeng: 0, erMed: true, id: brukerteller }
+    if (!users[myname]) {
+      userCount++;
+      users[myname] = { name: myname, score: 0, connected: true, id: userCount }
     } else {
-      brukere[jeger].erMed = true;
+      users[myname].connected = true;
     }
-    io.emit("velkommen", JSON.stringify(brukere[jeger]));
+    io.emit("welcome", JSON.stringify(users[myname]));
   });
 
-  socket.on('ord', function(ord) {
-    if (!jeger) {
-      socket.emit("feil", "Jeg vet ikke hvem du er.");
+  socket.on('current', function() {
+    socket.emit("current", JSON.stringify({ users: users, letters: words.currentLetters() }));
+  });
+
+  socket.on('word', function(word) {
+    if (!myname) {
+      socket.emit("sorry", "I don't know you.");
       return false;
     }
 
-    var poeng = kalkulerPoengFraOrd(ord);
-    brukere[jeger].poeng += poeng;
-
-    if (poeng > 0) {
-      io.emit("poeng", JSON.stringify(brukere[jeger]));
-    }
+    console.log("Check word: "+word);
+    words.scoreWord(word, function(word, type, score) {
+      console.log("Word taken: "+word + " " + myname + " $" + score);
+      users[myname].score += score;
+      io.emit("word taken", JSON.stringify({ word: word, type: type }));
+      io.emit("score update", JSON.stringify(users[myname]));
+    }, function() {
+      console.log(myname + " -$1");
+      users[myname].score -= 1;
+      io.emit("score update", JSON.stringify(users[myname]));
+    });
   });
 
   socket.on('disconnect', function() {
-    if (jeger) {
-      if (brukere[jeger]) {
-        brukere[jeger].erMed = false;
-        io.emit("farvel", JSON.stringify(brukere[jeger]));
+    if (myname) {
+      if (users[myname]) {
+        users[myname].connected = false;
+        io.emit("goodbye", JSON.stringify(users[myname]));
       }
-      console.log(jeger + " har forlatt oss.");
+      console.log(myname + " has left us.");
     } else {
-      console.log('En bruker har forlatt oss.');
+      console.log('A user has left us.');
     }
   });
 });
 
-function sjekkOmOrdetPasserBokstavene(ord) {
-  var bokstaver = ord.toLowerCase().split('').sort();
-
-  var score = 0;
-  var b = 0;
-  var gb = 0;
-  var bl = bokstaver.length;
-  var gbl = gjeldendeBokstaver.length;
-  while (b<bl && gb<gbl) {
-    // console.log("lik? " + bokstaver[b] + ' ' + gjeldendeBokstaver[gb]);
-    if (bokstaver[b] === gjeldendeBokstaver[gb]) {
-      score += words.letterScore(bokstaver[b]);
-      b++;
-    }
-    gb++;
-  }
-  //console.log(b);
-  if (b === bl) {
-    return score;
-  }
-  return 0;
-}
-
-function kalkulerPoengFraOrd(ord) {
-  console.log("Sjekk "+ord);
-  var poeng = sjekkOmOrdetPasserBokstavene(ord);
-  
-  var sjekkOrd = ord.toUpperCase();
-  var type = ordbok[sjekkOrd];
-  if (type) {
-    io.emit('ordfunnet', type );
-    return poeng;
-  }
-  return 0;
-}
-
 function sendBokstaver() {
-  gjeldendeBokstaver = words.randomLetters(30);
-  var bokstaver = JSON.stringify({ bokstaver: gjeldendeBokstaver });
-  gjeldendeBokstaver.sort();
-  console.log(bokstaver);
-  io.emit("bokstaver", bokstaver);
-  setTimeout(sendBokstaver, rundetid);
+  var letters = JSON.stringify({ bokstaver: words.changeLetters(30) });
+  console.log(letters);
+  io.emit("letters", letters);
+  setTimeout(sendBokstaver, round);
 }
 
-function klartTilSending() {
-  wordsRead = true;
-  sendBokstaver();
-}
-
-function readWordFile(fileName) {
-  var wordCount = 0;
-  lineReader.eachLine(fileName, function(line, last) {
-//    console.log(line);
-    var larr = line.split(' ');
-    if (ordbok[larr[0]]) {
-      ordbok[larr[0]] += '/'+larr[1];
-    } else {
-      ordbok[larr[0]] = larr[1];
-      wordCount++;
-    }
-    if (last) {
-      console.log("Added " + wordCount + " words to dictionary.");
-      klartTilSending();
-    }
-  });
-}
-
-readWordFile(wordFile);
+words.readWordFile(wordFile, sendBokstaver);
 

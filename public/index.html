@@ -17,31 +17,31 @@
     console.log(data);
   });
 
-  socket.on('ord', function (ord) {
-    if (ord && ord.length > 0) {
-      console.log(ord);
-    } else {
-      console.log("IKKE FUNNET");
-    }
+  socket.on('word taken', function (melding) {
+    console.log(melding);
   });
 
-  socket.on('feil', function(melding) {
+  socket.on('sorry', function(melding) {
     console.log("FEIL: "+melding);
   });
 
-  socket.on('bokstaver', function(melding) {
+  socket.on('letters', function(melding) {
     console.log(melding);
   });
 
-  socket.on('poeng', function(melding) {
+  socket.on('score update', function(melding) {
     console.log(melding);
   });
 
-  socket.on('velkommen', function(melding) {
+  socket.on('welcome', function(melding) {
     console.log(melding);
   });
 
-  socket.on('farvel', function(melding) {
+  socket.on('current', function(melding) {
+    console.log(melding);
+  });
+
+  socket.on('goodbye', function(melding) {
     console.log(melding);
   });
 
