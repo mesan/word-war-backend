@@ -5,6 +5,7 @@ var http = require("http").Server(app);
 var io = require("socket.io")(http);
 
 var round = 30000; // ms
+var remainingTime = round;
 var userCount = 0;
 var users = {};
 var wordFile = "NSF-ordlisten.txt";
@@ -35,8 +36,8 @@ io.on('connection', function(socket) {
     io.emit("welcome", JSON.stringify(users[myname]));
   });
 
-  socket.on('current', function() {
-    socket.emit("current", JSON.stringify({ users: users, letters: words.currentLetters() }));
+  socket.on('current state', function() {
+    socket.emit("state", JSON.stringify({ users: users, letters: words.currentLetters() }));
   });
 
   socket.on('word', function(word) {
@@ -71,12 +72,24 @@ io.on('connection', function(socket) {
   });
 });
 
-function sendBokstaver() {
-  var letters = JSON.stringify({ bokstaver: words.changeLetters(30) });
-  console.log(letters);
-  io.emit("letters", letters);
-  setTimeout(sendBokstaver, round);
+function sendRemainingTime() {
+  console.log(remainingTime);
+  io.emit("remaining time", remainingTime/1000);
+  if (remainingTime <= 0.001) {
+    sendLetters();
+  } else {
+    remainingTime -= 1000;
+    setTimeout(sendRemainingTime, 1000);
+  }
 }
 
-words.readWordFile(wordFile, sendBokstaver);
+function sendLetters() {
+  var letters = JSON.stringify({ letters: words.changeLetters(30) });
+  console.log(letters);
+  io.emit("new round", letters);
+  remainingTime = round;
+  sendRemainingTime();
+}
+
+words.readWordFile(wordFile, sendLetters);
 

@@ -25,7 +25,7 @@
     console.log("FEIL: "+melding);
   });
 
-  socket.on('letters', function(melding) {
+  socket.on('new round', function(melding) {
     console.log(melding);
   });
 
@@ -33,11 +33,15 @@
     console.log(melding);
   });
 
+  socket.on('remaining time', function(melding) {
+    console.log(melding);
+  });
+
   socket.on('welcome', function(melding) {
     console.log(melding);
   });
 
-  socket.on('current', function(melding) {
+  socket.on('state', function(melding) {
     console.log(melding);
   });
 
