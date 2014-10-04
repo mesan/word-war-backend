@@ -9,9 +9,7 @@
 <script type="text/javascript">
   var host = location.origin.replace(/^http/, 'ws');
 
-  var socket = io(host, {
-    transports: ['websocket']
-  });
+  var socket = io(host);
 
   socket.on('connected', function (data) {
     console.log(data);
