@@ -7,7 +7,9 @@
 
 <script type="text/javascript" src="vendor/socket.io-client/socket.io.js"></script>
 <script type="text/javascript">
-  var socket = io({
+  var host = location.origin.replace(/^http/, 'ws');
+
+  var socket = io(host, {
     transports: ['websocket']
   });
 
