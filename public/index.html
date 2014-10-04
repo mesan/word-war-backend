@@ -7,9 +7,7 @@
 
 <script type="text/javascript" src="vendor/socket.io-client/socket.io.js"></script>
 <script type="text/javascript">
-  var url = 'http://localhost:3000';
-
-  var socket = io(url, {
+  var socket = io({
     transports: ['websocket']
   });
 
