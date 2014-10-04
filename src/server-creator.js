@@ -7,7 +7,7 @@ module.exports.create = function () {
 
   app.use(express.static('./public'));
 
-  app.io.set('origins', '*localhost:*');
+  app.io.set('origins', '*:*');
 
   http.listen(port, function() {
     console.log('Listening to port ' + port + '.');
