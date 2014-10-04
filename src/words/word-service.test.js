@@ -26,7 +26,7 @@ var letters = { a: 1, b: 2 };
 
 exports['valueWord'] = {
   setUp: function(done) {
-    words = require('./words')({ 'ABDISERE': 'verb' }, letters);
+    words = require('./word-service')(null, letters);
     currentLetters = words.changeLetters(3);
     done();
   },

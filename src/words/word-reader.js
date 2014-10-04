@@ -1,4 +1,6 @@
-module.exports = function readWordFile(lineReader, fileName, onLinesRead) {
+var lineReader  = require('line-reader');
+
+module.exports.read = function (fileName, onLinesRead) {
   var wordCount = 0;
 
   var dictionary = {};

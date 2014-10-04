@@ -16,8 +16,11 @@
   socket.on('connected', function (data) {
     console.log(data);
 
-    socket.emit('i am', 'arild');
-    socket.emit('word', 'kirke');
+    socket.emit('login', 'arild');
+
+    socket.emit('state');
+
+    socket.emit('newWord', 'kirke');
   });
 
   socket.on('word taken', function (melding) {
@@ -25,14 +28,14 @@
   });
 
   socket.on('sorry', function(melding) {
-    console.log("FEIL: "+melding);
-  });
-
-  socket.on('new round', function(melding) {
     console.log(melding);
   });
 
-  socket.on('score update', function(melding) {
+  socket.on('newRound', function(melding) {
+    console.log(melding);
+  });
+
+  socket.on('scoreUpdate', function(melding) {
     console.log(melding);
   });
 
@@ -40,15 +43,16 @@
     console.log(melding);
   });
 
-  socket.on('welcome', function(melding) {
+  socket.on('userLoggedIn', function(melding) {
     console.log(melding);
   });
 
-  socket.on('state', function(melding) {
+  socket.on('currentState', function(melding) {
     console.log(melding);
   });
 
-  socket.on('goodbye', function(melding) {
+  socket.on('userLoggedOut', function(melding) {
+    console.log('user logged out');
     console.log(melding);
   });
 
