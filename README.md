@@ -3,12 +3,6 @@
 The best project ever.
 
 ## Getting Started
-Install the module with: `npm install word-war`
-
-```javascript
-var word_war = require('word-war');
-word_war.awesome(); // "awesome"
-```
 
 ## Documentation
 _(Coming soon)_
@@ -24,4 +18,4 @@ _(Nothing yet)_
 
 ## License
 Copyright (c) 2014 Mikkel Steine, Arild Wanvik Tvergrov  
-Licensed under the MIT license.
+Licensed under the ISC license.
