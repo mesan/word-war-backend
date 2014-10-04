@@ -1,6 +1,6 @@
 {
-  "roundDuration": 30000,
-  "wordFile": "NSF-ordlisten-short.txt",
+  "roundDuration": 10000,
+  "wordFile": "NSF-ordlisten.txt",
   "letterFile": "words/letter-points.json",
   "letterCount": 30
 }

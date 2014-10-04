@@ -24,7 +24,6 @@ module.exports.listen = function (io, socket, wordWar) {
 
       user.score += score;
       io.emit('wordTaken', { word: word, wordClass: wordClass });
-
     } else {
       console.log(name + ' -$1');
       user.score -= 1;

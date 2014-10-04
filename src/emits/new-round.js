@@ -6,9 +6,7 @@ module.exports.emit = function (io, wordWar) {
 
   var letters = wordWar.service.changeLetters(wordWar.letterCount);
 
-  io.emit('newRound', {
-    letters: letters
-  });
+  io.emit('newRound', letters);
 
   console.log('New round: ', letters.join(', '));
 
