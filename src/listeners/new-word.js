@@ -12,20 +12,34 @@ module.exports.listen = function (io, socket, wordWar) {
       return socket.emit('sorry', 'I don\'t know you.');
     }
 
-    var wordInfo = wordWar.service.verifyWord(word);
-
     var user = users[name];
 
-    if (wordInfo) {
-      var score = wordInfo.score;
-      var wordClass = wordInfo.wordClass;
+    var wordOk = true;
 
-      console.log('Word taken: ' + word + ' ' + name + ' $' + score);
+    if (!wordWar.service.verifyLetters(word)) {
+      socket.emit('wordInvalid', word);
+      wordOk = false;
+    } else if (wordWar.service.wordTaken(word)) {
+      socket.emit('wordTaken', word);
+      wordOk = false;
+    } else if (!wordWar.service.validWord(word)) {
+      socket.emit('wordInvalid', word);
+      wordOk = false;
+    }
+
+    if (wordOk) {
+      var wordClass = wordWar.service.getWordClass(word);
+      var score = wordWar.service.valueWord(word);
+
+      wordWar.service.takeWord(word);
+
+      console.log('Word OK: ' + word + ' ' + name + ' $' + score);
 
       user.score += score;
-      io.emit('wordTaken', { word: word, wordClass: wordClass, user: user, wordScore: score });
+      io.emit('wordOk', { word: word, wordClass: wordClass, user: user, wordScore: score });
+
     } else {
-      console.log(name + ' -$1');
+      console.log('Word failed: ' + word + ' ' + name + ' -$1');
       user.score -= 1;
     }
 

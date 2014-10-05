@@ -40,22 +40,20 @@ module.exports = function (dictionary, letterEntries) {
     return score;
   }
 
-  function verifyWord(word) {
-    if (verifyLetters(word)) {
-      var wordClass = dictionary[word.toUpperCase()];
+  function validWord(word) {
+    return dictionary[word.toUpperCase()];
+  }
 
-      if (wordClass && !takenWords[word]) {
-        takenWords[word] = true;
+  function getWordClass(word) {
+    return dictionary[word.toUpperCase()];
+  }
 
-        var score = valueWord(word);
+  function wordTaken(word) {
+    return takenWords[word];
+  }
 
-        return {
-          word: word,
-          wordClass: wordClass,
-          score: score
-        };
-      }
-    }
+  function takeWord(word) {
+    takenWords[word] = true;
   }
 
   function changeLetters(letterCount) {
@@ -94,8 +92,12 @@ module.exports = function (dictionary, letterEntries) {
   }
 
   return {
-    verifyWord: verifyWord,
+    verifyLetters: verifyLetters,
+    validWord: validWord,
+    getWordClass: getWordClass,
     valueWord: valueWord,
+    wordTaken: wordTaken,
+    takeWord: takeWord,
     changeLetters: changeLetters,
     getCurrentLetters: getCurrentLetters,
     getLetterScore: getLetterScore
