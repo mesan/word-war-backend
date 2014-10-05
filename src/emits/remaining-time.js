@@ -2,7 +2,7 @@ var newRound = require('./new-round');
 
 module.exports.emit = function emitRemainingTime(io, wordWar) {
 
-  io.emit('remaining time', wordWar.remainingTime / 1000);
+  io.emit('remainingTime', wordWar.remainingTime / 1000);
 
   if (wordWar.remainingTime <= 0.001) {
     newRound.emit(io, wordWar);

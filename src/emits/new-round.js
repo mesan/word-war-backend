@@ -1,4 +1,4 @@
-var timeRemaining = require('./time-remaining');
+var timeRemaining = require('./remaining-time');
 
 module.exports.emit = function (io, wordWar) {
 
