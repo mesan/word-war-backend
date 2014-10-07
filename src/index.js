@@ -15,6 +15,7 @@ var newRound    = require('./emits/new-round');
 // Configuration
 var config      = require('./config.json');
 var letters     = require('./' + config.letterFile);
+var avatars     = require('./' + config.avatarFile);
 
 // Dependencies
 var wordReader  = require('./words/word-reader');
@@ -32,7 +33,8 @@ var wordWar = {
 wordReader.read(config.wordFile, startApp);
 
 function startApp(dictionary) {
-  wordWar.service = require('./words/word-service')(dictionary, letters);
+  wordWar.wordService = require('./words/word-service')(dictionary, letters);
+  wordWar.avatarPicker = require('./avatars/avatar-picker')(avatars);
 
   connection.listen(app.io, wordWar, onConnection);
 

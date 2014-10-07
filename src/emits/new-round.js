@@ -4,7 +4,7 @@ module.exports.emit = function (io, wordWar) {
 
   wordWar.remainingTime = wordWar.roundDuration;
 
-  var letters = wordWar.service.changeLetters(wordWar.letterCount);
+  var letters = wordWar.wordService.changeLetters(wordWar.letterCount);
 
   io.emit('newRound', letters);
 

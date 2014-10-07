@@ -10,7 +10,13 @@ module.exports.listen = function (io, socket, wordWar) {
 
     if (!users[name]) {
       wordWar.userCount++;
-      users[name] = { name: name, score: 0, connected: true, id: wordWar.userCount };
+      users[name] = {
+        id: wordWar.userCount,
+        name: name,
+        connected: true,
+        score: 0,
+        avatar: wordWar.avatarPicker.pickRandomAvatar()
+      };
     } else {
       users[name].connected = true;
     }

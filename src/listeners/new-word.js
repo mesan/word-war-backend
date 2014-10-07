@@ -16,22 +16,22 @@ module.exports.listen = function (io, socket, wordWar) {
 
     var wordOk = true;
 
-    if (!wordWar.service.verifyLetters(word)) {
+    if (!wordWar.wordService.verifyLetters(word)) {
       socket.emit('wordInvalid', word);
       wordOk = false;
-    } else if (wordWar.service.wordTaken(word)) {
+    } else if (wordWar.wordService.wordTaken(word)) {
       socket.emit('wordTaken', word);
       wordOk = false;
-    } else if (!wordWar.service.validWord(word)) {
+    } else if (!wordWar.wordService.validWord(word)) {
       socket.emit('wordInvalid', word);
       wordOk = false;
     }
 
     if (wordOk) {
-      var wordClass = wordWar.service.getWordClass(word);
-      var score = wordWar.service.valueWord(word);
+      var wordClass = wordWar.wordService.getWordClass(word);
+      var score = wordWar.wordService.valueWord(word);
 
-      wordWar.service.takeWord(word);
+      wordWar.wordService.takeWord(word);
 
       console.log('Word OK: ' + word + ' ' + name + ' $' + score);
 
