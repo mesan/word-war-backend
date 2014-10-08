@@ -34,7 +34,7 @@ wordReader.read(config.wordFile, startApp);
 
 function startApp(dictionary) {
   wordWar.wordService = require('./words/word-service')(dictionary, letters);
-  wordWar.avatarPicker = require('./avatars/avatar-picker')(avatars);
+  wordWar.avatarPicker = require('./avatars/avatar-picker')(avatars, config.avatarFilePattern);
 
   connection.listen(app.io, wordWar, onConnection);
 

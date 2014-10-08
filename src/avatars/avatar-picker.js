@@ -1,8 +1,8 @@
-module.exports = function (avatars) {
+module.exports = function (avatars, avatarFilePattern) {
 
   function pickRandomAvatar() {
     var avatar = avatars[Math.floor(Math.random() * avatars.length)];
-    return '/avatars/Superheroes-circle-' + avatar + '.png';
+    return avatarFilePattern.replace('*', avatar);
   }
 
   return {

@@ -3,5 +3,6 @@
   "wordFile": "NSF-ordlisten.txt",
   "letterFile": "words/letter-points.json",
   "avatarFile": "avatars/avatars.json",
+  "avatarFilePattern": "/avatars/Superheroes-circle-*.png",
   "letterCount": 30
 }
