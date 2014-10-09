@@ -22,12 +22,30 @@
 
 var words;
 var currentLetters;
+var dictionary = { 'ABBA': 'subst' };
 var letters = { a: 1, b: 2 };
+
+exports['verifyLetters'] = {
+  setUp: function(done) {
+    words = require('./word-service')(dictionary, letters);
+    currentLetters = words.changeLetters(2);
+    done();
+  },
+  'returns true if the letters are verified': function (test) {
+    test.equal(true, words.verifyLetters(currentLetters.join('')));
+    test.done();
+  },
+  'returns false if the letters are not available': function (test) {
+    currentLetters.push('!');
+    test.equal(false, words.verifyLetters(currentLetters.join('')));
+    test.done();
+  }
+};
 
 exports['valueWord'] = {
   setUp: function(done) {
-    words = require('./word-service')(null, letters);
-    currentLetters = words.changeLetters(3);
+    words = require('./word-service')(dictionary, letters);
+    currentLetters = words.changeLetters(2);
     done();
   },
   'values the word': function (test) {
@@ -42,6 +60,21 @@ exports['valueWord'] = {
   },
   'values non-existent character to zero': function (test) {
     test.equal(0, words.valueWord('c'));
+    test.done();
+  }
+};
+
+exports['validWord'] =  {
+  setUp: function (done) {
+    words = require('./word-service')(dictionary, letters);
+    done();
+  },
+  'returns true if the word exists in the dictionary': function (test) {
+    test.equal('subst', words.validWord('abba'));
+    test.done();
+  },
+  'returns false if the word does not exist in the dictionary': function (test) {
+    test.equal(undefined, words.validWord('xyz'));
     test.done();
   }
 };

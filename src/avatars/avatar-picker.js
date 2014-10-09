@@ -7,5 +7,5 @@ module.exports = function (avatars, avatarFilePattern) {
 
   return {
     pickRandomAvatar: pickRandomAvatar
-  }
+  };
 };
