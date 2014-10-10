@@ -4,6 +4,10 @@ module.exports.listen = function (io, socket, wordWar) {
 
   socket.on('newWord', function (word) {
 
+    if (typeof word !== 'string') {
+      return socket.emit('sorry', 'Word must be a string.');
+    }
+
     console.log('New word suggested: ' + word);
 
     var name = wordWar.userNamesBySIDs[socket.id];
