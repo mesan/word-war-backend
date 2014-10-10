@@ -49,7 +49,7 @@ module.exports = function (dictionary, letterEntries) {
   }
 
   function wordTaken(word) {
-    return takenWords[word];
+    return takenWords[word] || false;
   }
 
   function takeWord(word) {
