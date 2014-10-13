@@ -3,7 +3,7 @@ module.exports.create = function () {
   var app         = express();
   var http        = require('http').Server(app);
   app.io          = require('socket.io')(http);
-  var port        = process.env.PORT || 3000;
+  var port        = process.env.PORT || 5000;
 
   app.use(express.static('./public'));
 

@@ -4,6 +4,7 @@
   "description": "Word War - Word game for Mesan AS",
   "main": "src/server.js",
   "scripts": {
+    "start": "node src/index",
     "test": "grunt nodeunit"
   },
   "repository": {
