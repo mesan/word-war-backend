@@ -1,21 +1,11 @@
-# word-war
+# Word War Server
 
-The best project ever.
+## Set Up
 
-## Getting Started
+* `npm install`
+* `npm start`
+* Browser: `http://localhost:5000`
 
-## Documentation
-_(Coming soon)_
+## Develop
 
-## Examples
-_(Coming soon)_
-
-## Contributing
-In lieu of a formal styleguide, take care to maintain the existing coding style. Add unit tests for any new or changed functionality. Lint and test your code using [Grunt](http://gruntjs.com/).
-
-## Release History
-_(Nothing yet)_
-
-## License
-Copyright (c) 2014 Mikkel Steine, Arild Wanvik Tvergrov  
-Licensed under the ISC license.
+* Run `grunt watch` to monitor changes in your JS files and automatically run NodeUnit tests.
